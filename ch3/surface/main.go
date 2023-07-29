@@ -1,15 +1,12 @@
-// Copyright © 2016 Alan A. A. Donovan & Brian W. Kernighan.
-// License: https://creativecommons.org/licenses/by-nc-sa/4.0/
-
-// See page 58.
-//!+
-
-// Surface computes an SVG rendering of a 3-D surface function.
+// Surface computes an SVG rendering of a 3-D surface function and writes it to a GIF file.
 package main
 
 import (
-	"fmt"
+	"image"
+	"image/color"
+	"image/gif"
 	"math"
+	"os"
 )
 
 const (
@@ -24,20 +21,46 @@ const (
 var sin30, cos30 = math.Sin(angle), math.Cos(angle) // sin(30°), cos(30°)
 
 func main() {
-	fmt.Printf("<svg xmlns='http://www.w3.org/2000/svg' "+
-		"style='stroke: grey; fill: white; stroke-width: 0.7' "+
-		"width='%d' height='%d'>", width, height)
-	for i := 0; i < cells; i++ {
-		for j := 0; j < cells; j++ {
-			ax, ay := corner(i+1, j)
-			bx, by := corner(i, j)
-			cx, cy := corner(i, j+1)
-			dx, dy := corner(i+1, j+1)
-			fmt.Printf("<polygon points='%g,%g %g,%g %g,%g %g,%g'/>\n",
-				ax, ay, bx, by, cx, cy, dx, dy)
+	anim := gif.GIF{LoopCount: -1} // create a new GIF object
+
+	for i := 0; i < 64; i++ { // create 64 frames
+		rect := image.Rect(0, 0, width, height)
+		img := image.NewPaletted(rect, color.Palette{color.White, color.Black})
+
+		for i := 0; i < cells; i++ {
+			for j := 0; j < cells; j++ {
+				ax, ay := corner(i+1, j)
+				bx, by := corner(i, j)
+				cx, cy := corner(i, j+1)
+				dx, dy := corner(i+1, j+1)
+
+				// Use color.White or color.Black based on (i+j)%2
+				imgColor := color.White
+				if (i+j)%2 == 1 {
+					imgColor = color.Black
+				}
+
+				// Set color of each pixel in the image
+				img.SetColorIndex(int(ax), int(ay), uint8(img.Palette.Index(imgColor)))
+				img.SetColorIndex(int(bx), int(by), uint8(img.Palette.Index(imgColor)))
+				img.SetColorIndex(int(cx), int(cy), uint8(img.Palette.Index(imgColor)))
+				img.SetColorIndex(int(dx), int(dy), uint8(img.Palette.Index(imgColor)))
+			}
 		}
+
+		anim.Delay = append(anim.Delay, 8) // delay between frames
+		anim.Image = append(anim.Image, img)
 	}
-	fmt.Println("</svg>")
+
+	file, err := os.Create("surface.gif")
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	if err := gif.EncodeAll(file, &anim); err != nil { // write the GIF file
+		panic(err)
+	}
 }
 
 func corner(i, j int) (float64, float64) {
@@ -58,5 +81,3 @@ func f(x, y float64) float64 {
 	r := math.Hypot(x, y) // distance from (0,0)
 	return math.Sin(r) / r
 }
-
-//!-
