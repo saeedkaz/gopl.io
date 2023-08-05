@@ -5,7 +5,10 @@ import (
 )
 
 func main() {
-	r := [...]int{3, 5: 3, 2, 3: 1}
-	fmt.Println(r)
-
+	var x, y []int
+	for i := 0; i < 10; i++ {
+		y = append(x, i, i+1)
+		fmt.Printf("%d  cap=%d\t%v\n", i, cap(y), y)
+		x = y
+	}
 }
