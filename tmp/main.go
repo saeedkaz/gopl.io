@@ -10,18 +10,22 @@ func reverse(s []int) {
 	}
 }
 
-func main() {
-<<<<<<< HEAD
-	s := []int{0, 1, 2, 3, 4, 5}
-	reverse(s)
-	fmt.Printf("%v\n", s)
+var m = make(map[string]int)
 
-=======
-	var x, y []int
-	for i := 0; i < 10; i++ {
-		y = append(x, i, i+1)
-		fmt.Printf("%d  cap=%d\t%v\n", i, cap(y), y)
-		x = y
-	}
->>>>>>> 21794508e9a70671c0b57b8d358874536f53e28c
+func k(list []string) string  { return fmt.Sprintf("%q", list) }
+func Add(list []string)       { m[k(list)]++ }
+func Count(list []string) int { return m[k(list)] }
+func main() {
+	ss := []string{"apple", "banana", "cherry"}
+	fmt.Println(k(ss))
+	fmt.Println(ss)
+	Add(ss)
+	fmt.Println(Count(ss))
+	fmt.Println(m)
+	ss2 := []string{"apple2", "banana2", "cherry2"}
+	fmt.Println(k(ss2))
+	fmt.Println(ss2)
+	Add(ss2)
+	fmt.Println(Count(ss2))
+	fmt.Println(m)
 }
