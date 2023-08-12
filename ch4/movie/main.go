@@ -12,7 +12,7 @@ import (
 	"log"
 )
 
-//!+
+// !+
 type Movie struct {
 	Title  string
 	Year   int  `json:"released"`
@@ -45,7 +45,7 @@ func main() {
 
 	{
 		//!+MarshalIndent
-		data, err := json.MarshalIndent(movies, "", "    ")
+		data, err := json.MarshalIndent(movies, "*", "    ")
 		if err != nil {
 			log.Fatalf("JSON marshaling failed: %s", err)
 		}
